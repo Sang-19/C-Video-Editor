@@ -1,0 +1,11 @@
+{
+  "name": "TRISVAX Studio",
+  "description": "C++20 native video editor and Android NDK studio with multi-track timeline, color grading, transitions, text overlays, audio mixing, and 1080p MP4 export.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
