@@ -101,7 +101,39 @@ fun EditorScreen(
             .background(TrisvaxColors.MainBackground)
             .safeDrawingPadding()
     ) {
-        // Video Preview Viewport with X Close & Next Export
+        // Editor header: project context and primary actions stay outside the canvas.
+        Row(
+            modifier = Modifier.fillMaxWidth().height(52.dp).padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            IconButton(onClick = onClose, modifier = Modifier.size(40.dp)) {
+                Icon(Icons.Filled.Close, contentDescription = "Close editor", tint = TrisvaxColors.PrimaryText)
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text(state.projectName, color = TrisvaxColors.PrimaryText, fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text("TRISVAX STUDIO", color = TrisvaxColors.MutedText, fontSize = 9.sp, letterSpacing = 1.1.sp)
+            }
+            IconButton(enabled = state.canUndo, onClick = viewModel::undo, modifier = Modifier.size(36.dp)) {
+                Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "Undo",
+                    tint = if (state.canUndo) TrisvaxColors.PrimaryText else TrisvaxColors.MutedText,
+                    modifier = Modifier.size(18.dp))
+            }
+            IconButton(enabled = state.canRedo, onClick = viewModel::redo, modifier = Modifier.size(36.dp)) {
+                Icon(Icons.AutoMirrored.Filled.Redo, contentDescription = "Redo",
+                    tint = if (state.canRedo) TrisvaxColors.PrimaryText else TrisvaxColors.MutedText,
+                    modifier = Modifier.size(18.dp))
+            }
+            Button(onClick = { viewModel.startExport(onExportFinished) },
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = TrisvaxColors.PrimaryOrange),
+                modifier = Modifier.height(36.dp)) {
+                Text("Export", color = TrisvaxColors.MainBackground, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+            }
+        }
+
+        // Video preview canvas
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -156,64 +188,7 @@ fun EditorScreen(
                 }
             }
 
-            IconButton(
-                onClick = onClose,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(10.dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.55f))
-            ) {
-                Icon(Icons.Filled.Close, contentDescription = "Close editor", tint = TrisvaxColors.PrimaryText)
-            }
-
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    enabled = state.canUndo,
-                    onClick = { viewModel.undo() },
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.55f))
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.Undo,
-                        contentDescription = "Undo",
-                        tint = if (state.canUndo) TrisvaxColors.PrimaryText else TrisvaxColors.MutedText,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-                IconButton(
-                    enabled = state.canRedo,
-                    onClick = { viewModel.redo() },
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.55f))
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.Redo,
-                        contentDescription = "Redo",
-                        tint = if (state.canRedo) TrisvaxColors.PrimaryText else TrisvaxColors.MutedText,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-                Button(
-                    onClick = { viewModel.startExport(onExportFinished) },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = TrisvaxColors.PrimaryOrange),
-                    modifier = Modifier.height(38.dp)
-                ) {
-                    Text("Next", color = TrisvaxColors.PrimaryText, fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                }
-            }
+            // Close, undo, redo and export actions are in the header above.
 
             state.saveBanner?.let { banner ->
                 Surface(
@@ -234,7 +209,7 @@ fun EditorScreen(
             }
         }
 
-        // Playback Transport Bar
+        // Playback transport and current time
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -290,7 +265,7 @@ fun EditorScreen(
             }
         }
 
-        // Multi-Track Timeline
+        // Multi-track timeline
         TimelineTrackView(
             timeline = state.timeline,
             playheadMs = state.playheadMs,
@@ -322,7 +297,7 @@ fun EditorScreen(
             onClose = { viewModel.selectTool(EditorTool.NONE) }
         )
 
-        // Bottom Circular Tool Strip
+        // Scrollable editing tool rail
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -331,7 +306,7 @@ fun EditorScreen(
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            EditorToolButton("Music", Icons.Filled.MusicNote, state.activeTool == EditorTool.MUSIC) {
+            EditorToolButton("Audio", Icons.Filled.MusicNote, state.activeTool == EditorTool.MUSIC) {
                 viewModel.selectTool(EditorTool.MUSIC)
             }
             EditorToolButton("Text", Icons.Filled.TextFields, state.activeTool == EditorTool.TEXT) {
@@ -361,7 +336,7 @@ fun EditorScreen(
             EditorToolButton("Voice", Icons.Filled.Mic, state.activeTool == EditorTool.VOICE) {
                 viewModel.selectTool(EditorTool.VOICE)
             }
-            EditorToolButton("Transitions", Icons.Filled.Layers, state.activeTool == EditorTool.TRANSITIONS) {
+            EditorToolButton("Transition", Icons.Filled.Layers, state.activeTool == EditorTool.TRANSITIONS) {
                 viewModel.selectTool(EditorTool.TRANSITIONS)
             }
             EditorToolButton("Clips", Icons.Filled.SwapHoriz, state.activeTool == EditorTool.CLIPS) {
