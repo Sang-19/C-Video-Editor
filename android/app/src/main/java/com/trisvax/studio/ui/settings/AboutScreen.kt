@@ -35,7 +35,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 }
                 Text("TRISVAX STUDIO", color = TrisvaxColors.PrimaryText, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
                 Text("Video editor", color = TrisvaxColors.SecondaryOrange, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                Text("Version 2.0.0", color = TrisvaxColors.SecondaryText, fontSize = 12.sp)
+                Text("Version 2.0.0-cpp", color = TrisvaxColors.SecondaryText, fontSize = 12.sp)
                 Text("A mobile-first video editing studio built around a native C++ editing engine and a focused Android interface.", color = TrisvaxColors.SecondaryText, fontSize = 13.sp, lineHeight = 20.sp, textAlign = TextAlign.Center)
             }
         }
