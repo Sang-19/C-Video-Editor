@@ -15,6 +15,8 @@ import com.trisvax.studio.ui.picker.MediaPickerScreen
 import com.trisvax.studio.ui.projects.ProjectsScreen
 import com.trisvax.studio.ui.projects.ProjectsViewModel
 import com.trisvax.studio.ui.welcome.WelcomeScreen
+import com.trisvax.studio.ui.settings.SettingsScreen
+import com.trisvax.studio.ui.settings.AboutScreen
 
 object TrisvaxRoutes {
     const val WELCOME = "welcome"
@@ -23,6 +25,8 @@ object TrisvaxRoutes {
     const val CAMERA = "camera"
     const val EDITOR = "editor/{projectId}"
     const val FINISHED = "finished"
+    const val SETTINGS = "settings"
+    const val ABOUT = "about"
 
     fun editor(projectId: String): String = "editor/$projectId"
 }
@@ -49,7 +53,9 @@ fun TrisvaxNavGraph() {
                 viewModel = vm,
                 onOpenProject = { pid -> navController.navigate(TrisvaxRoutes.editor(pid)) },
                 onOpenMediaPicker = { navController.navigate(TrisvaxRoutes.PICKER) },
-                onOpenCamera = { navController.navigate(TrisvaxRoutes.CAMERA) }
+                onOpenCamera = { navController.navigate(TrisvaxRoutes.CAMERA) },
+                onOpenSettings = { navController.navigate(TrisvaxRoutes.SETTINGS) },
+                onOpenAbout = { navController.navigate(TrisvaxRoutes.ABOUT) }
             )
         }
         composable(TrisvaxRoutes.PICKER) {
@@ -93,6 +99,12 @@ fun TrisvaxNavGraph() {
                     }
                 }
             )
+        }
+        composable(TrisvaxRoutes.SETTINGS) {
+            SettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(TrisvaxRoutes.ABOUT) {
+            AboutScreen(onBack = { navController.popBackStack() })
         }
     }
 }

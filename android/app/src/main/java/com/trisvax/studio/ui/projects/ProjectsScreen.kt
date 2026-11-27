@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
@@ -82,10 +84,13 @@ fun ProjectsScreen(
     viewModel: ProjectsViewModel,
     onOpenProject: (String) -> Unit,
     onOpenMediaPicker: () -> Unit,
-    onOpenCamera: () -> Unit
+    onOpenCamera: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenAbout: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     var showCreatePopup by remember { mutableStateOf(false) }
+    var showAppMenu by remember { mutableStateOf(false) }
     var renameTarget by remember { mutableStateOf<ProjectSummaryDto?>(null) }
     var deleteTarget by remember { mutableStateOf<ProjectSummaryDto?>(null) }
 
@@ -129,12 +134,31 @@ fun ProjectsScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                IconButton(onClick = { viewModel.toggleSearch(!state.isSearchActive) }) {
-                    Icon(
-                        imageVector = if (state.isSearchActive) Icons.Filled.Close else Icons.Filled.Search,
-                        contentDescription = "Search projects",
-                        tint = TrisvaxColors.PrimaryText
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { viewModel.toggleSearch(!state.isSearchActive) }) {
+                        Icon(
+                            imageVector = if (state.isSearchActive) Icons.Filled.Close else Icons.Filled.Search,
+                            contentDescription = "Search projects",
+                            tint = TrisvaxColors.PrimaryText
+                        )
+                    }
+                    Box {
+                        IconButton(onClick = { showAppMenu = true }) {
+                            Icon(Icons.Filled.MoreVert, contentDescription = "More options", tint = TrisvaxColors.PrimaryText)
+                        }
+                        DropdownMenu(expanded = showAppMenu, onDismissRequest = { showAppMenu = false }) {
+                            DropdownMenuItem(
+                                text = { Text("Settings") },
+                                leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                                onClick = { showAppMenu = false; onOpenSettings() }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("About TRISVAX") },
+                                leadingIcon = { Icon(Icons.Filled.Info, contentDescription = null) },
+                                onClick = { showAppMenu = false; onOpenAbout() }
+                            )
+                        }
+                    }
                 }
             }
 
